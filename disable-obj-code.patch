@@ -1,0 +1,12 @@
+--- icu/source/tools/toolutil/pkg_genc.h	2019-04-17 12:42:15.000000000 -0700
++++ icu_host/source/tools/toolutil/pkg_genc.h	2019-04-19 22:36:42.668075808 -0700
+@@ -29,6 +29,9 @@
+ #define BUILD_DATA_WITHOUT_ASSEMBLY
+ #endif
+ 
++// WebAssembly: no obj code, please
++#define U_DISABLE_OBJ_CODE
++
+ #ifndef U_DISABLE_OBJ_CODE /* testing */
+ #if defined(WINDOWS_WITH_MSVC) || U_PLATFORM_IS_LINUX_BASED
+ #define CAN_WRITE_OBJ_CODE

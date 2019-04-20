@@ -1,0 +1,4 @@
+#!/bin/sh
+shift
+wasisdk="/home/zhuowei/wasi-sdk"
+"$wasisdk/bin/llvm-ar" rcs "$@"

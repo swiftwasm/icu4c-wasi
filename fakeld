@@ -1,0 +1,6 @@
+#!/bin/sh
+while [ "$1" != "-o" ]
+do
+	shift
+done
+touch $2
