@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 srcdir="$PWD"
-wasisdk="/home/zhuowei/wasi-sdk"
+wasisdk=${WASI_SDK:-"/home/zhuowei/wasi-sdk"}
 
 # build ICU on the host first
 if [ ! -e icu_host ]

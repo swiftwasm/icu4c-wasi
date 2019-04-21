@@ -1,4 +1,4 @@
 #!/bin/sh
 shift
-wasisdk="/home/zhuowei/wasi-sdk"
+wasisdk=${WASI_SDK:-"/home/zhuowei/wasi-sdk"}
 "$wasisdk/bin/llvm-ar" rcs "$@"

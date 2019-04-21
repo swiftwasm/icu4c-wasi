@@ -1,0 +1,22 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- script: |
+    ./ci-build.sh
+  displayName: 'ci-build'
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: icu4c-wasi
+- task: GitHubRelease@0
+  inputs:
+    gitHubConnection: github-release
+    tagSource: manual
+    tag: $(Build.BuildNumber)
+    assets: |
+      $(Build.ArtifactStagingDirectory)/*
+
