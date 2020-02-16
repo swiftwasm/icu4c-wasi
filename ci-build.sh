@@ -8,6 +8,3 @@ sudo dpkg -i wasisdk.deb
 WASI_SDK=/opt/wasi-sdk ./build.sh
 # package it
 tar cJf icu4c-wasi.tar.xz icu_out
-# copy it
-cp icu4c-wasi.tar.xz "$BUILD_ARTIFACTSTAGINGDIRECTORY/"
-
