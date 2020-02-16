@@ -10,4 +10,5 @@ jobs:
         run: ./ci-build.sh
       - uses: actions/upload-artifact@v1
         with:
-          path: icu4c-wasi.tar.xz
+          path: ./icu4c-wasi.tar.xz
+          name: icu4c-wasi.tar.xz
