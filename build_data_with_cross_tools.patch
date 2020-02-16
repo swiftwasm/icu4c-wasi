@@ -1,0 +1,22 @@
+--- icu/source/Makefile.in
++++ icu/source/Makefile.in
+@@ -38,7 +38,7 @@
+ @TOOLS_TRUE@@TESTS_TRUE@TEST = test
+ @SAMPLES_TRUE@SAMPLE = samples
+ @TOOLS_TRUE@TOOLS = tools
+-@TOOLS_TRUE@DATASUBDIR = data
++@DATA_TRUE@DATASUBDIR = data
+
+ ## pkgconfig setup. Always have uc and i18n. Others are optional.
+ ALL_PKGCONFIG_SUFFIX=uc i18n
+--- icu/source/configure.ac     2019-04-17 19:42:15.000000000 +0000
++++ icu/source/configure.ac     2020-02-16 01:41:07.315692313 +0000
+@@ -1124,6 +1124,8 @@
+        tools=true)
+ ICU_CONDITIONAL(TOOLS, test "$tools" = true)
+
++ICU_CONDITIONAL(DATA, test "$tools" = true || test "$cross_compiling" = "yes")
++
+ AC_ARG_WITH(data-packaging,
+        [  --with-data-packaging     specify how to package ICU data. Possible values:
+         files    raw files (.res, etc)
