@@ -32,6 +32,8 @@ autoconf
 	--prefix="$srcdir/icu_out" \
 	--with-data-packaging=static \
 	CC="$wasisdk/bin/clang" CXX="$wasisdk/bin/clang++" AR="llvm-ar" \
-	CXXFLAGS="-fno-exceptions" RANLIB="llvm-ranlib"
+	CFLAGS="--sysroot $wasisdk/share/wasi-sysroot" \
+	CXXFLAGS="-fno-exceptions --sysroot $wasisdk/share/wasi-sysroot" \
+	RANLIB="llvm-ranlib"
 make -j4
 make install
