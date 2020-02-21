@@ -1,7 +1,5 @@
 #!/bin/bash
 set -e
-# install llvm
-sudo apt-get install llvm -y
 
 # install the Wasi SDK
 wget -O dist-wasi-sdk.tgz.zip "https://github.com/swiftwasm/wasi-sdk/releases/download/0.2.0-swiftwasm/dist-ubuntu-latest.tgz.zip"

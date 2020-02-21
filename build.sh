@@ -24,16 +24,18 @@ patch -p0 < build_data_with_cross_tools.patch
 cd icu/source
 cp config/mh-linux config/mh-unknown
 autoconf
-# note: I don't know if the AR and RANLIB is required - but I've had Ubuntu's ar and ranlib produce .a files that wasm-ld won't read.
+
 ./configure \
-	--host=wasm32-unknown-none --enable-static --with-cross-build="$srcdir/icu_host/source" \
-	--disable-shared \
-	--disable-tools --disable-tests --disable-samples --disable-extras \
+	--host=wasm32-unknown-none \
+	--with-cross-build="$srcdir/icu_host/source" \
+	--enable-static --disable-shared \
+	--disable-tools --disable-tests \
+	--disable-samples --disable-extras \
 	--prefix="$srcdir/icu_out" \
 	--with-data-packaging=static \
-	CC="$wasisdk/bin/clang" CXX="$wasisdk/bin/clang++" AR="llvm-ar" \
+	CC="$wasisdk/bin/clang" CXX="$wasisdk/bin/clang++" \
+	AR="$wasisdk/bin/llvm-ar" RANLIB="$wasisdk/bin/llvm-ranlib" \
 	CFLAGS="--sysroot $wasisdk/share/wasi-sysroot" \
-	CXXFLAGS="-fno-exceptions --sysroot $wasisdk/share/wasi-sysroot" \
-	RANLIB="llvm-ranlib"
+	CXXFLAGS="-fno-exceptions --sysroot $wasisdk/share/wasi-sysroot"
 make -j4
 make install
