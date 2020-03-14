@@ -1,0 +1,59 @@
+{
+  "localeFilter": {
+    "filterType": "locale",
+    "includeScripts": false,
+    "whitelist": [
+      "en_US"
+    ]
+  },
+  "featureFilters": {
+    "brkitr_dictionaries": {
+      "filterType": "exclude"
+    },
+    "conversion_mappings": {
+      "whitelist": [
+        "ibm-37_P100-1995",
+        "ibm-1047_P100-1995"
+      ]
+    },
+    "confusables": {
+      "filterType": "exclude"
+    },
+    "misc": {
+      "filterType": "exclude"
+    },
+    "lang_tree": {
+      "filterType": "exclude"
+    },
+    "region_tree": {
+      "filterType": "exclude"
+    },
+    "stringprep": {
+      "filterType": "exclude"
+    },
+    "zone_tree": {
+      "filterType": "exclude"
+    },
+    "translit": {
+      "filterType": "exclude"
+    },
+    "unames": {
+      "filterType": "exclude"
+    },
+    "ulayout": {
+      "filterType": "exclude"
+    },
+    "unit_tree": {
+      "filterType": "exclude"
+    },
+    "coll_ucadata": {
+      "filterType": "exclude"
+    },
+    "curr_supplemental": {
+      "filterType": "exclude"
+    },
+    "coll_tree": {
+      "filterType": "exclude"
+    }
+  }
+}
