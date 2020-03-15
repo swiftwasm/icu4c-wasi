@@ -16,14 +16,20 @@ then
 	cd ../..
 fi
 
-rm -rf icu icu_out || true
+rm -rf icu icu_out data || true
 tar xf icu4c-64_2-src.tgz
+unzip icu4c-64_2-data.zip
+rm -rf icu/source/data
+mv data icu/source/data
 # build the cross one
 patch -p0 < patch-double-conversion.diff
 patch -p0 < build_data_with_cross_tools.patch
+
 cd icu/source
 cp config/mh-linux config/mh-unknown
 autoconf
+
+export ICU_DATA_FILTER_FILE=$srcdir/swift-filters.json
 
 ./configure \
 	--host=wasm32-unknown-none \
