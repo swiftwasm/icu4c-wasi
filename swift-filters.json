@@ -37,9 +37,6 @@
     "translit": {
       "filterType": "exclude"
     },
-    "unames": {
-      "filterType": "exclude"
-    },
     "ulayout": {
       "filterType": "exclude"
     },
