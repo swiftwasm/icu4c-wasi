@@ -9,7 +9,7 @@ then
 	rm -rf icu_host || true
 	tar xf icu4c-64_2-src.tgz
 	mv icu icu_host
-	patch -p0 <disable-obj-code.patch
+	patch -p0 < patches/disable-obj-code.patch
 	cd icu_host/source
 	./configure
 	make -j4
@@ -22,8 +22,8 @@ unzip icu4c-64_2-data.zip
 rm -rf icu/source/data
 mv data icu/source/data
 # build the cross one
-patch -p0 < patch-double-conversion.diff
-patch -p0 < build_data_with_cross_tools.patch
+patch -p0 < patches/patch-double-conversion.diff
+patch -p0 < patches/build_data_with_cross_tools.patch
 
 cd icu/source
 cp config/mh-linux config/mh-unknown
