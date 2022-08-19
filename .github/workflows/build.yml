@@ -12,3 +12,8 @@ jobs:
         with:
           path: ./icu4c-wasi.tar.xz
           name: icu4c-wasi.tar.xz
+      - name: Create new release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: gh release create "$GITHUB_REF_NAME" icu4c-wasi.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
