@@ -29,7 +29,9 @@ cd icu/source
 cp config/mh-linux config/mh-unknown
 autoconf
 
-export ICU_DATA_FILTER_FILE=$srcdir/swift-filters.json
+if [ -z "$ICU_DATA_FILTER_FILE" ]; then
+  export ICU_DATA_FILTER_FILE=$srcdir/data-filters/swift-minimal.json
+fi
 
 ./configure \
 	--host=wasm32-unknown-none \
