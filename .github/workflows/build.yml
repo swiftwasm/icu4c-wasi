@@ -5,10 +5,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: ci-build
         run: ./ci-build.sh
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           path: ./icu4c-wasi.tar.xz
           name: icu4c-wasi.tar.xz
