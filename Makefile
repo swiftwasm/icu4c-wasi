@@ -56,3 +56,13 @@ $(BUILD)/SwiftPackage: $(BUILD)/icu4c-out/cross/BUILT
 	cp -R SwiftPackage $(BUILD)
 	mkdir -p $@/build
 	cp -R $(BUILD)/icu4c-out/cross/install/icu/usr/local/lib $@/build
+
+$(BUILD)/ci:
+	BUILD_DIR=$(BUILD) ./ci/install-build-sdk.sh
+
+.PHONY: ci-setup
+ci-setup: $(BUILD)/ci
+
+.PHONY: ci
+ci: ci-setup
+	$(MAKE) icu4c-wasi.tar.xz WASI_SDK_PATH=$(BUILD)/ci/wasi-sdk

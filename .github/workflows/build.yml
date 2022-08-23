@@ -6,8 +6,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: ci-build
-        run: ./ci-build.sh
+      - run: make ci
       - uses: actions/upload-artifact@v3
         with:
           path: ./icu4c-wasi.tar.xz
