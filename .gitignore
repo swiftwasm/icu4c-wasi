@@ -1,7 +1,8 @@
 *.tgz
 *.tar.gz
 *.zip
-icu
-icu_host
-icu_out
 wasi-sdk
+build
+ci
+.build
+icu4c-wasi.tar.xz

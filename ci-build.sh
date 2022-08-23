@@ -1,20 +1,19 @@
 #!/bin/bash
-set -e
+set -xe
+
+mkdir -p ci
 
 # install the Wasi SDK
-wget -O dist-wasi-sdk.tgz.zip "https://github.com/swiftwasm/wasi-sdk/releases/download/0.2.0-swiftwasm/dist-ubuntu-latest.tgz.zip"
-unzip dist-wasi-sdk.tgz.zip -d .
-WASI_SDK_TAR_PATH=$(find . -type f -name "wasi-sdk-*")
+wget -O ci/dist-wasi-sdk.tgz.zip "https://github.com/swiftwasm/wasi-sdk/releases/download/0.2.0-swiftwasm/dist-ubuntu-latest.tgz.zip"
+unzip ci/dist-wasi-sdk.tgz.zip -d ci
+WASI_SDK_TAR_PATH=$(find ci -type f -name "wasi-sdk-*")
 WASI_SDK_FULL_NAME=$(basename $WASI_SDK_TAR_PATH -linux.tar.gz)
-tar xfz $WASI_SDK_TAR_PATH
-mv $WASI_SDK_FULL_NAME ./wasi-sdk
+tar xfz $WASI_SDK_TAR_PATH -C ci
+mv ci/$WASI_SDK_FULL_NAME ./ci/wasi-sdk
 
 # Link wasm32-wasi-unknown to wasm32-wasi because clang finds crt1.o from sysroot
 # with os and environment name `getMultiarchTriple`.
-ln -s wasm32-wasi wasi-sdk/share/wasi-sysroot/lib/wasm32-wasi-unknown
+ln -s wasm32-wasi ci/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasi-unknown
 
-# build it
-./get_source.sh
-WASI_SDK=$PWD/wasi-sdk ./build.sh
 # package it
-tar cJf icu4c-wasi.tar.xz icu_out
+WASI_SDK_PATH=$PWD/ci/wasi-sdk make icu4c-wasi.tar.xz
