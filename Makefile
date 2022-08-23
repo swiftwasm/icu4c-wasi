@@ -65,4 +65,4 @@ ci-setup: $(BUILD)/ci
 
 .PHONY: ci
 ci: ci-setup
-	$(MAKE) icu4c-wasi.tar.xz WASI_SDK_PATH=$(BUILD)/ci/wasi-sdk
+	$(MAKE) icu4c-wasi.tar.xz WASI_SDK_PATH=$(CURDIR)/$(BUILD)/ci/wasi-sdk
