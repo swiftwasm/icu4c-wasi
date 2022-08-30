@@ -33,7 +33,7 @@ ifndef WASI_SDK_PATH
 	$(error WASI_SDK_PATH is required variable)
 endif
 	mkdir -p $(@D)
-	cd $(@D) && env ICU_DATA_FILTER_FILE=$(ICU_DATA_FILTER_FILE) \
+	cd $(@D) && export ICU_DATA_FILTER_FILE=$(ICU_DATA_FILTER_FILE) && \
 	  ../../icu4c-src/cross/source/configure \
 	    --host=wasm32-unknown-none \
 	    --with-cross-build="$(CURDIR)/$(BUILD)/icu4c-out/host" \
@@ -44,9 +44,9 @@ endif
 	    CC="$(WASI_SDK_PATH)/bin/clang" CXX="$(WASI_SDK_PATH)/bin/clang++" \
 	    AR="$(WASI_SDK_PATH)/bin/llvm-ar" RANLIB="$(WASI_SDK_PATH)/bin/llvm-ranlib" \
 	    CFLAGS="--sysroot $(WASI_SDK_PATH)/share/wasi-sysroot" \
-	    CXXFLAGS="-fno-exceptions --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot"
-	$(MAKE) -C $(@D)
-	$(MAKE) -C $(@D) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross/install/icu
+	    CXXFLAGS="-fno-exceptions --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot" && \
+	  $(MAKE) -C $(@D) && \
+	  $(MAKE) -C $(@D) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross/install/icu
 	touch $@
 
 icu4c-wasi.tar.xz: $(BUILD)/icu4c-out/cross/BUILT
