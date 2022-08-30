@@ -45,8 +45,8 @@ endif
 	    AR="$(WASI_SDK_PATH)/bin/llvm-ar" RANLIB="$(WASI_SDK_PATH)/bin/llvm-ranlib" \
 	    CFLAGS="--sysroot $(WASI_SDK_PATH)/share/wasi-sysroot" \
 	    CXXFLAGS="-fno-exceptions --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot" && \
-	  $(MAKE) -C $(@D) && \
-	  $(MAKE) -C $(@D) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross/install/icu
+	  $(MAKE) && \
+	  $(MAKE) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross/install/icu
 	touch $@
 
 icu4c-wasi.tar.xz: $(BUILD)/icu4c-out/cross/BUILT
