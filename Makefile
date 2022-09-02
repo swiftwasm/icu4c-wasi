@@ -5,18 +5,20 @@ $(BUILD)/icu4c-src.tgz:
 	mkdir -p $(@D)
 	curl -L -o $@ https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-src.tgz
 
-$(BUILD)/icu4c-data.tgz:
-	mkdir -p $(D)
-	curl -L -o $@ https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.tgz
+$(BUILD)/icu4c-data.zip:
+	mkdir -p $(@D)
+	curl -L -o $@ https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-data.zip
 
 $(BUILD)/icu4c-src/host: $(BUILD)/icu4c-src.tgz
 	mkdir -p $@
 	tar xf $(BUILD)/icu4c-src.tgz -C $@ --strip-components=1
 	patch -d $@ -p1 < patches/disable-obj-code.patch
 
-$(BUILD)/icu4c-src/cross: $(BUILD)/icu4c-src.tgz
+$(BUILD)/icu4c-src/cross: $(BUILD)/icu4c-src.tgz $(BUILD)/icu4c-data.zip
 	mkdir -p $@
 	tar xf $(BUILD)/icu4c-src.tgz -C $@ --strip-components=1
+	rm -rf $@/source/data
+	unzip $(BUILD)/icu4c-data.zip -d $@/source
 	patch -d $@ -p1 < patches/patch-double-conversion.diff
 	patch -d $@ -p1 < patches/build_data_with_cross_tools.patch
 	cp $@/source/config/mh-linux $@/source/config/mh-unknown
@@ -56,6 +58,7 @@ $(BUILD)/SwiftPackage: $(BUILD)/icu4c-out/cross/BUILT
 	cp -R SwiftPackage $(BUILD)
 	mkdir -p $@/build
 	cp -R $(BUILD)/icu4c-out/cross/install/icu/usr/local/lib $@/build
+	rm -rf $@/build/lib/pkgconfig $@/build/lib/icu
 
 $(BUILD)/ci:
 	BUILD_DIR=$(BUILD) ./ci/install-build-sdk.sh
