@@ -1,3 +1,4 @@
+#ifdef __wasm__
 __asm__(
   ".section .custom_section..swift1_autolink_entries,\"\",@\n"
   ".asciz   \""
@@ -7,3 +8,4 @@ __asm__(
     PACKAGE_DIR"/build/lib/libicuuc.a"
   "\""
 );
+#endif
