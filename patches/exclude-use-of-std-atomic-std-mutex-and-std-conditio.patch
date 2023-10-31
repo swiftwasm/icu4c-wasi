@@ -1,19 +1,7 @@
-From 87b83f4246532ee9ac945395b96556a3ed6d60b7 Mon Sep 17 00:00:00 2001
-From: Yuta Saito <kateinoigakukun@gmail.com>
-Date: Tue, 31 Oct 2023 07:14:00 +0000
-Subject: [PATCH] Exclude use of std::atomic, std::mutex, and
- std::condition_variable
-
-To build ICU without threading support
----
- icu4c/source/common/umutex.cpp | 25 +++++++++++++++++++++++++
- icu4c/source/common/umutex.h   | 26 +++++++++++++++++++++++++-
- 2 files changed, 50 insertions(+), 1 deletion(-)
-
-diff --git a/icu4c/source/common/umutex.cpp b/icu4c/source/common/umutex.cpp
+diff --git a/source/common/umutex.cpp b/source/common/umutex.cpp
 index 20b03d6cd3e..50a19535a4d 100644
---- a/icu4c/source/common/umutex.cpp
-+++ b/icu4c/source/common/umutex.cpp
+--- a/source/common/umutex.cpp
++++ b/source/common/umutex.cpp
 @@ -52,7 +52,9 @@ umtx_lock(UMutex *mutex) {
      if (mutex == nullptr) {
          mutex = globalMutex();
@@ -120,10 +108,10 @@ index 20b03d6cd3e..50a19535a4d 100644
  }
  
  U_NAMESPACE_END
-diff --git a/icu4c/source/common/umutex.h b/icu4c/source/common/umutex.h
+diff --git a/source/common/umutex.h b/source/common/umutex.h
 index d0a7e7afc5b..53a89534b90 100755
---- a/icu4c/source/common/umutex.h
-+++ b/icu4c/source/common/umutex.h
+--- a/source/common/umutex.h
++++ b/source/common/umutex.h
 @@ -40,7 +40,7 @@
  // Export an explicit template instantiation of std::atomic<int32_t>. 
  // When building DLLs for Windows this is required as it is used as a data member of the exported SharedObject class.
