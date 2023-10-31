@@ -1,5 +1,6 @@
 BUILD := build
 ICU_DATA_FILTER_FILE := $(CURDIR)/data-filters/swift-minimal.json
+WASI_LIBC_EMULATION_FLAGS := -D_WASI_EMULATED_SIGNAL
 
 $(BUILD)/icu4c-src.tgz:
 	mkdir -p $(@D)
@@ -45,8 +46,8 @@ endif
 	    --with-data-packaging=static \
 	    CC="$(WASI_SDK_PATH)/bin/clang" CXX="$(WASI_SDK_PATH)/bin/clang++" \
 	    AR="$(WASI_SDK_PATH)/bin/llvm-ar" RANLIB="$(WASI_SDK_PATH)/bin/llvm-ranlib" \
-	    CFLAGS="--sysroot $(WASI_SDK_PATH)/share/wasi-sysroot" \
-	    CXXFLAGS="-fno-exceptions --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot" && \
+	    CFLAGS="--sysroot $(WASI_SDK_PATH)/share/wasi-sysroot $(WASI_LIBC_EMULATION_FLAGS)" \
+	    CXXFLAGS="-fno-exceptions --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot $(WASI_LIBC_EMULATION_FLAGS)" && \
 	  $(MAKE) && \
 	  $(MAKE) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross/install/icu
 	touch $@
