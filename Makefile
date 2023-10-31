@@ -1,6 +1,6 @@
 BUILD := build
 ICU_DATA_FILTER_FILE := $(CURDIR)/data-filters/swift-minimal.json
-WASI_LIBC_EMULATION_FLAGS := -D_WASI_EMULATED_SIGNAL
+WASI_LIBC_EMULATION_FLAGS := -D_WASI_EMULATED_SIGNAL -DU_THREADING_NONE
 
 $(BUILD)/icu4c-src.tgz:
 	mkdir -p $(@D)
@@ -22,6 +22,7 @@ $(BUILD)/icu4c-src/cross: $(BUILD)/icu4c-src.tgz $(BUILD)/icu4c-data.zip
 	unzip $(BUILD)/icu4c-data.zip -d $@/source
 	patch -d $@ -p1 < patches/patch-double-conversion.diff
 	patch -d $@ -p1 < patches/build_data_with_cross_tools.patch
+	patch -d $@ -p1 < patches/exclude-use-of-std-atomic-std-mutex-and-std-conditio.patch
 	cp $@/source/config/mh-linux $@/source/config/mh-unknown
 	cd $@/source && autoconf
 

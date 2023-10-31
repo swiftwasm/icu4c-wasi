@@ -1,0 +1,203 @@
+From 87b83f4246532ee9ac945395b96556a3ed6d60b7 Mon Sep 17 00:00:00 2001
+From: Yuta Saito <kateinoigakukun@gmail.com>
+Date: Tue, 31 Oct 2023 07:14:00 +0000
+Subject: [PATCH] Exclude use of std::atomic, std::mutex, and
+ std::condition_variable
+
+To build ICU without threading support
+---
+ icu4c/source/common/umutex.cpp | 25 +++++++++++++++++++++++++
+ icu4c/source/common/umutex.h   | 26 +++++++++++++++++++++++++-
+ 2 files changed, 50 insertions(+), 1 deletion(-)
+
+diff --git a/icu4c/source/common/umutex.cpp b/icu4c/source/common/umutex.cpp
+index 20b03d6cd3e..50a19535a4d 100644
+--- a/icu4c/source/common/umutex.cpp
++++ b/icu4c/source/common/umutex.cpp
+@@ -52,7 +52,9 @@ umtx_lock(UMutex *mutex) {
+     if (mutex == nullptr) {
+         mutex = globalMutex();
+     }
++#ifndef U_THREADING_NONE
+     mutex->fMutex.lock();
++#endif
+ }
+ 
+ 
+@@ -62,11 +64,18 @@ umtx_unlock(UMutex* mutex)
+     if (mutex == nullptr) {
+         mutex = globalMutex();
+     }
++#ifndef U_THREADING_NONE
+     mutex->fMutex.unlock();
++#endif
+ }
+ 
++#ifndef U_THREADING_NONE
+ UConditionVar::UConditionVar() : fCV() {
+ }
++#else
++UConditionVar::UConditionVar() {
++}
++#endif
+ 
+ UConditionVar::~UConditionVar() {
+ }
+@@ -76,19 +85,25 @@ umtx_condWait(UConditionVar *cond, UMutex *mutex) {
+     if (mutex == nullptr) {
+         mutex = globalMutex();
+     }
++#ifndef U_THREADING_NONE
+     cond->fCV.wait(mutex->fMutex);
++#endif
+ }
+ 
+ 
+ U_CAPI void U_EXPORT2
+ umtx_condBroadcast(UConditionVar *cond) {
++#ifndef U_THREADING_NONE
+     cond->fCV.notify_all();
++#endif
+ }
+ 
+ 
+ U_CAPI void U_EXPORT2
+ umtx_condSignal(UConditionVar *cond) {
++#ifndef U_THREADING_NONE
+     cond->fCV.notify_one();
++#endif
+ }
+ 
+ 
+@@ -98,6 +113,7 @@ umtx_condSignal(UConditionVar *cond) {
+  *
+  *************************************************************************************************/
+ 
++#ifndef U_THREADING_NONE
+ static std::mutex &initMutex() {
+     static std::mutex m;
+     return m;
+@@ -107,6 +123,7 @@ static std::condition_variable &initCondition() {
+     static std::condition_variable cv;
+     return cv;
+ }
++#endif
+ 
+ 
+ // This function is called when a test of a UInitOnce::fState reveals that
+@@ -119,7 +136,9 @@ static std::condition_variable &initCondition() {
+ //
+ U_COMMON_API UBool U_EXPORT2
+ umtx_initImplPreInit(UInitOnce &uio) {
++#ifndef U_THREADING_NONE
+     std::unique_lock<std::mutex> lock(initMutex());
++#endif
+ 
+     if (umtx_loadAcquire(uio.fState) == 0) {
+         umtx_storeRelease(uio.fState, 1);
+@@ -128,7 +147,9 @@ umtx_initImplPreInit(UInitOnce &uio) {
+         while (umtx_loadAcquire(uio.fState) == 1) {
+             // Another thread is currently running the initialization.
+             // Wait until it completes.
++#ifndef U_THREADING_NONE
+             initCondition().wait(lock);
++#endif
+         }
+         U_ASSERT(uio.fState == 2);
+         return false;
+@@ -145,10 +166,14 @@ umtx_initImplPreInit(UInitOnce &uio) {
+ U_COMMON_API void U_EXPORT2
+ umtx_initImplPostInit(UInitOnce &uio) {
+     {
++#ifndef U_THREADING_NONE
+         std::unique_lock<std::mutex> lock(initMutex());
++#endif
+         umtx_storeRelease(uio.fState, 2);
+     }
++#ifndef U_THREADING_NONE
+     initCondition().notify_all();
++#endif
+ }
+ 
+ U_NAMESPACE_END
+diff --git a/icu4c/source/common/umutex.h b/icu4c/source/common/umutex.h
+index d0a7e7afc5b..53a89534b90 100755
+--- a/icu4c/source/common/umutex.h
++++ b/icu4c/source/common/umutex.h
+@@ -40,7 +40,7 @@
+ // Export an explicit template instantiation of std::atomic<int32_t>. 
+ // When building DLLs for Windows this is required as it is used as a data member of the exported SharedObject class.
+ // See digitlst.h, pluralaffix.h, datefmt.h, and others for similar examples.
+-#if U_PF_WINDOWS <= U_PLATFORM && U_PLATFORM <= U_PF_CYGWIN && !defined(U_IN_DOXYGEN)
++#if U_PF_WINDOWS <= U_PLATFORM && U_PLATFORM <= U_PF_CYGWIN && !defined(U_IN_DOXYGEN) && !defined(U_THREADING_NONE)
+ #if defined(__clang__) || defined(_MSC_VER)
+   #if defined(__clang__)
+     // Suppress the warning that the explicit instantiation after explicit specialization has no effect.
+@@ -66,23 +66,43 @@ U_NAMESPACE_BEGIN
+  *
+  ****************************************************************************/
+ 
++#ifndef U_THREADING_NONE
+ typedef std::atomic<int32_t> u_atomic_int32_t;
++#else
++typedef int32_t u_atomic_int32_t;
++#endif
+ #define ATOMIC_INT32_T_INITIALIZER(val) ATOMIC_VAR_INIT(val)
+ 
+ inline int32_t umtx_loadAcquire(u_atomic_int32_t &var) {
++#ifndef U_THREADING_NONE
+     return var.load(std::memory_order_acquire);
++#else
++    return var;
++#endif
+ }
+ 
+ inline void umtx_storeRelease(u_atomic_int32_t &var, int32_t val) {
++#ifndef U_THREADING_NONE
+     var.store(val, std::memory_order_release);
++#else
++    var = val;
++#endif
+ }
+ 
+ inline int32_t umtx_atomic_inc(u_atomic_int32_t *var) {
++#ifndef U_THREADING_NONE
+     return var->fetch_add(1) + 1;
++#else
++    return ++(*var);
++#endif
+ }
+ 
+ inline int32_t umtx_atomic_dec(u_atomic_int32_t *var) {
++#ifndef U_THREADING_NONE
+     return var->fetch_sub(1) - 1;
++#else
++    return --(*var);
++#endif
+ }
+ 
+ 
+@@ -195,8 +215,10 @@ struct UMutex : public icu::UMemory {
+     UMutex(const UMutex &other) = delete;
+     UMutex &operator =(const UMutex &other) = delete;
+ 
++#ifndef U_THREADING_NONE
+     std::mutex   fMutex = {};    // Note: struct - pubic members - because most access is from
+     //                           //       plain C style functions (umtx_lock(), etc.)
++#endif
+ };
+ 
+ 
+@@ -206,7 +228,9 @@ struct UConditionVar : public icu::UMemory {
+     UConditionVar(const UConditionVar &other) = delete;
+     UConditionVar &operator =(const UConditionVar &other) = delete;
+ 
++#ifndef U_THREADING_NONE
+     std::condition_variable_any fCV;
++#endif
+ };
+ 
+ #define U_MUTEX_INITIALIZER {}
+-- 
+2.40.0
+
