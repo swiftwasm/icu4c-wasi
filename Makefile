@@ -45,6 +45,7 @@ endif
 	    --disable-tools --disable-tests \
 	    --disable-samples --disable-extras \
 	    --with-data-packaging=static \
+	    --prefix / \
 	    CC="$(WASI_SDK_PATH)/bin/clang" CXX="$(WASI_SDK_PATH)/bin/clang++" \
 	    AR="$(WASI_SDK_PATH)/bin/llvm-ar" RANLIB="$(WASI_SDK_PATH)/bin/llvm-ranlib" \
 	    CFLAGS="--sysroot $(WASI_SDK_PATH)/share/wasi-sysroot $(WASI_LIBC_EMULATION_FLAGS)" \
@@ -54,12 +55,12 @@ endif
 	touch $@
 
 icu4c-wasi.tar.xz: $(BUILD)/icu4c-out/cross/BUILT
-	tar cJf icu4c-wasi.tar.xz $(BUILD)/icu4c-out/cross/install/icu
+	tar cJf icu4c-wasi.tar.xz -C $(BUILD)/icu4c-out/cross/install/ icu
 
 $(BUILD)/SwiftPackage: $(BUILD)/icu4c-out/cross/BUILT
 	cp -R SwiftPackage $(BUILD)
 	mkdir -p $@/build
-	cp -R $(BUILD)/icu4c-out/cross/install/icu/usr/local/lib $@/build
+	cp -R $(BUILD)/icu4c-out/cross/install/icu/lib $@/build
 	rm -rf $@/build/lib/pkgconfig $@/build/lib/icu
 
 $(BUILD)/ci:
