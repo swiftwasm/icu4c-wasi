@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - run: make ci
+      - run: env GNUMAKEFLAGS=-j$((1 + $(nproc --all))) make ci
       - uses: actions/upload-artifact@v3
         with:
           path: ./icu4c-wasi.tar.xz
