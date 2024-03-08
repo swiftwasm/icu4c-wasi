@@ -19,9 +19,6 @@
     "confusables": {
       "filterType": "exclude"
     },
-    "misc": {
-      "filterType": "exclude"
-    },
     "lang_tree": {
       "filterType": "exclude"
     },
