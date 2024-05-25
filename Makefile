@@ -61,11 +61,11 @@ endif
 	    CFLAGS="--sysroot $(WASI_SDK_PATH)/share/wasi-sysroot $(WASI_LIBC_EMULATION_FLAGS)" \
 	    CXXFLAGS="-fno-exceptions --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot $(WASI_LIBC_EMULATION_FLAGS)" && \
 	  $(MAKE) && \
-	  $(MAKE) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross-$(TRIPLE)/install/icu
+	  $(MAKE) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross-$(TRIPLE)/install/icu-$(TRIPLE)
 	touch $@
 
 icu4c-$(TRIPLE).tar.xz: $(BUILD)/icu4c-out/cross-$(TRIPLE)/BUILT
-	tar cJf icu4c-$(TRIPLE).tar.xz -C $(BUILD)/icu4c-out/cross-$(TRIPLE)/install/ icu
+	tar cJf icu4c-$(TRIPLE).tar.xz -C $(BUILD)/icu4c-out/cross-$(TRIPLE)/install/ icu-$(TRIPLE)
 
 icu4c-package: icu4c-$(TRIPLE).tar.xz
 
