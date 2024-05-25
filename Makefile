@@ -6,6 +6,7 @@ WASI_LIBC_EMULATION_FLAGS := -D_WASI_EMULATED_SIGNAL
 ifeq ($(TRIPLE),wasm32-unknown-wasi)
 WASI_LIBC_EMULATION_FLAGS += -DU_THREADING_NONE
 else ifeq ($(TRIPLE),wasm32-unknown-wasip1-threads)
+WASI_LIBC_EMULATION_FLAGS += -pthread
 else
 $(error TRIPLE must be wasm32-unknown-wasi or wasm32-unknown-wasip1-threads)
 endif
