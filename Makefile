@@ -1,6 +1,15 @@
+TRIPLE ?= wasm32-unknown-wasi
 BUILD := build
 ICU_DATA_FILTER_FILE := $(CURDIR)/data-filters/swift-minimal.json
-WASI_LIBC_EMULATION_FLAGS := -D_WASI_EMULATED_SIGNAL -DU_THREADING_NONE
+WASI_LIBC_EMULATION_FLAGS := -D_WASI_EMULATED_SIGNAL
+
+ifeq ($(TRIPLE),wasm32-unknown-wasi)
+WASI_LIBC_EMULATION_FLAGS += -DU_THREADING_NONE
+else ifeq ($(TRIPLE),wasm32-unknown-wasip1-threads)
+else
+$(error TRIPLE must be wasm32-unknown-wasi or wasm32-unknown-wasip1-threads)
+endif
+
 
 $(BUILD)/icu4c-src.tgz:
 	mkdir -p $(@D)
@@ -32,7 +41,7 @@ $(BUILD)/icu4c-out/host/BUILT: $(BUILD)/icu4c-src/host
 	cd $(@D) && $(MAKE)
 	touch $@
 
-$(BUILD)/icu4c-out/cross/BUILT: $(BUILD)/icu4c-src/cross $(BUILD)/icu4c-out/host/BUILT
+$(BUILD)/icu4c-out/cross-$(TRIPLE)/BUILT: $(BUILD)/icu4c-src/cross $(BUILD)/icu4c-out/host/BUILT
 ifndef WASI_SDK_PATH
 	$(error WASI_SDK_PATH is required variable)
 endif
@@ -51,16 +60,19 @@ endif
 	    CFLAGS="--sysroot $(WASI_SDK_PATH)/share/wasi-sysroot $(WASI_LIBC_EMULATION_FLAGS)" \
 	    CXXFLAGS="-fno-exceptions --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot $(WASI_LIBC_EMULATION_FLAGS)" && \
 	  $(MAKE) && \
-	  $(MAKE) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross/install/icu
+	  $(MAKE) install DESTDIR=$(CURDIR)/$(BUILD)/icu4c-out/cross-$(TRIPLE)/install/icu
 	touch $@
 
-icu4c-wasi.tar.xz: $(BUILD)/icu4c-out/cross/BUILT
-	tar cJf icu4c-wasi.tar.xz -C $(BUILD)/icu4c-out/cross/install/ icu
+icu4c-$(TRIPLE).tar.xz: $(BUILD)/icu4c-out/cross-$(TRIPLE)/BUILT
+	tar cJf icu4c-$(TRIPLE).tar.xz -C $(BUILD)/icu4c-out/cross-$(TRIPLE)/install/ icu
 
-$(BUILD)/SwiftPackage: $(BUILD)/icu4c-out/cross/BUILT
-	cp -R SwiftPackage $(BUILD)
+icu4c-package: icu4c-$(TRIPLE).tar.xz
+
+$(BUILD)/SwiftPackage-$(TRIPLE): $(BUILD)/icu4c-out/cross-$(TRIPLE)/BUILT
+	rm -rf $@
+	cp -R SwiftPackage $@
 	mkdir -p $@/build
-	cp -R $(BUILD)/icu4c-out/cross/install/icu/lib $@/build
+	cp -R $(BUILD)/icu4c-out/cross-$(TRIPLE)/install/icu/lib $@/build
 	rm -rf $@/build/lib/pkgconfig $@/build/lib/icu
 
 $(BUILD)/ci:
@@ -71,4 +83,5 @@ ci-setup: $(BUILD)/ci
 
 .PHONY: ci
 ci: ci-setup
-	$(MAKE) icu4c-wasi.tar.xz WASI_SDK_PATH=$(CURDIR)/$(BUILD)/ci/wasi-sdk
+	$(MAKE) icu4c-package WASI_SDK_PATH=$(CURDIR)/$(BUILD)/ci/wasi-sdk TRIPLE=wasm32-unknown-wasi
+	$(MAKE) icu4c-package WASI_SDK_PATH=$(CURDIR)/$(BUILD)/ci/wasi-sdk TRIPLE=wasm32-unknown-wasip1-threads
