@@ -9,12 +9,12 @@ jobs:
       - run: env GNUMAKEFLAGS=-j$((1 + $(nproc --all))) make ci
       - uses: actions/upload-artifact@v4
         with:
-          path: ./icu4c-icu4c-wasm32-unknown-wasi.tar.xz
-          name: icu4c-icu4c-wasm32-unknown-wasi.tar.xz
+          path: ./icu4c-wasm32-unknown-wasi.tar.xz
+          name: icu4c-wasm32-unknown-wasi.tar.xz
       - uses: actions/upload-artifact@v4
         with:
-          path: ./icu4c-icu4c-wasm32-unknown-wasip1-threads.tar.xz
-          name: icu4c-icu4c-wasm32-unknown-wasip1-threads.tar.xz
+          path: ./icu4c-wasm32-unknown-wasip1-threads.tar.xz
+          name: icu4c-wasm32-unknown-wasip1-threads.tar.xz
       - name: Create new release
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: gh release create "$GITHUB_REF_NAME" icu4c-wasm32-unknown-wasi.tar.xz icu4c-wasm32-unknown-wasip1-threads.tar.xz
