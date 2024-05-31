@@ -73,7 +73,7 @@ $(BUILD)/SwiftPackage-$(TRIPLE): $(BUILD)/icu4c-out/cross-$(TRIPLE)/BUILT
 	rm -rf $@
 	cp -R SwiftPackage $@
 	mkdir -p $@/build
-	cp -R $(BUILD)/icu4c-out/cross-$(TRIPLE)/install/icu/lib $@/build
+	cp -R $(BUILD)/icu4c-out/cross-$(TRIPLE)/install/icu-$(TRIPLE)/lib $@/build
 	rm -rf $@/build/lib/pkgconfig $@/build/lib/icu
 
 $(BUILD)/ci:
